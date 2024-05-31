@@ -2,6 +2,7 @@ import { clerkMiddleware,createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 const isUploadthingRoute = createRouteMatcher(['/api/uploadthing(.*)'])
+const isSignIn = createRouteMatcher(['/servers(.*)'])
 
 
 // export default clerkMiddleware();
@@ -11,9 +12,14 @@ const isUploadthingRoute = createRouteMatcher(['/api/uploadthing(.*)'])
 
 export default clerkMiddleware((auth, req) => {
   if(isUploadthingRoute(req)) {
-    return NextResponse.next();;
+    return NextResponse.next();
   }
-  auth().protect();
+
+  if(isSignIn(req)){
+    auth().protect();
+  }
+  
+  return NextResponse.next();
 });
 
 export const config = {
