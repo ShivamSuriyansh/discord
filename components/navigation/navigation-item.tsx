@@ -12,12 +12,10 @@ interface NavigationItemProps  {
     name : string
 }
 
-export const    NavigationItem = ({id, imageUrl , name}: NavigationItemProps)=>{
+export const NavigationItem = ({id, imageUrl , name}: NavigationItemProps)=>{
 
     const params = useParams();
     const router = useRouter();
-
-    console.log(imageUrl);
     
     const onClick = ()=>{
         router.push('/servers/'+id)

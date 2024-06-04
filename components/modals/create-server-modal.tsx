@@ -24,11 +24,11 @@ import {
   } from "@/components/ui/form"
   import { Input } from "@/components/ui/input"
   import { Button } from "@/components/ui/button"
-import { useEffect, useState } from "react"
 import {FileUpload} from '@/components/file-upload';
 
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { useModal } from "@/hooks/use-modal-store"
   
 
 const formSchema = z.object({
@@ -41,14 +41,18 @@ const formSchema = z.object({
 })
 
 
-export const InitialModal = ()=>{
-    const [isMounted , setIsMounted] =  useState(false);
+export const CreateServerModal = ()=>{
 
+    const {isOpen , onClose , type} = useModal();
     const router = useRouter();
 
-    useEffect(()=>{
-        setIsMounted(true);
-    },[])
+    const isModalOpen = isOpen && type === 'createServer';
+    console.log("hi");
+
+    const handleModalClose = ()=>{
+        form.reset();
+        onClose();
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver : zodResolver(formSchema),
@@ -65,16 +69,13 @@ export const InitialModal = ()=>{
             await axios.post('/api/servers',values);
             form.reset();
             router.refresh();
-            window.location.reload();
         } catch (error) {
             console.error(error)
         }
     }
 
-    if(!isMounted) return null;
-
     return (
-        <Dialog open>
+        <Dialog open={isModalOpen} onOpenChange={handleModalClose}>
             <DialogContent className=" bg-white text-black p-0 overflow-hidden ">
                 <DialogHeader className=" pt-8 px-6 ">
                     <DialogTitle className=" text-2xl font-bold  text-center">Customize your server</DialogTitle>
@@ -120,7 +121,7 @@ export const InitialModal = ()=>{
                             />
                         </div>
                         <DialogFooter className=" bg-gray-100 px-6 py-4">
-                            <Button disabled={isLoading} variant="primary">
+                            <Button onClick={()=>onClose()} disabled={isLoading} variant="primary">
                                 Create
                             </Button>
 
